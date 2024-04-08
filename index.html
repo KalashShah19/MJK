@@ -6,13 +6,45 @@
     <link rel="icon" type="image/x-icon" href="logo.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
+        
+          
+        @media only screen and (max-width: 600px) {
+            img {
+                height: 100px;
+            }
+
+            #foregroundImageInput,
+            #input {
+                max-width: 100vw;
+                color: white;
+                font-size: larger;
+                padding: 10px;
+                margin-bottom: 15px;
+                border: 1px solid #ccc;
+                border-radius: 15px;
+            }
+
+            body {
+                height: 100vh;
+                width: 105%;
+                background-image: url(mobile_bg.jpeg);
+                background-repeat: no-repeat;
+                background-size: auto;
+                background-position: center;
+                overflow: hidden;
+                color: white;
+            }
+            #content{
+                padding-top:60% ;
+            }
+        }
+        @media only screen and (min-width:600px){
         body {
             background-image: url(mahaveer-bg.jpg);
             background-repeat: no-repeat;
             background-size: cover;
             color: white;
         }
-
         #combineAndDownloadButton {
             color: black;
             background-color: white;
@@ -42,34 +74,13 @@
         img {
             height: 300px;
         }
+    }
 
-        @media only screen and (max-width: 600px) {
-            img {
-                height: 100px;
-            }
-
-            #foregroundImageInput,
-            #input {
-                max-width: 100vh;
-                color: white;
-                font-size: larger;
-                padding: 10px;
-                margin-bottom: 15px;
-                border: 1px solid #ccc;
-                border-radius: 15px;
-            }
-
-            body {
-                background-image: url(mahaveer-bg.jpg);
-                background-repeat: no-repeat;
-                background-size: 100vh;
-                color: white;
-            }
-        }
     </style>
 </head>
 
 <body>
+    <div id="content">
     <center>
         <br><br><br><br><br><br><br><br><br><br><br>
         <p> Upload Your Photo and Download Your Own Card </p>
@@ -79,6 +90,7 @@
         <button id="combineAndDownloadButton">Download</button>
         <canvas id="canvas" width="2104" height="2100" style="display:none;"></canvas>
     </center>
+</div>
     <script>
         var name = "";
         document.addEventListener("DOMContentLoaded", () => {
