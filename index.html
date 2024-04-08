@@ -30,7 +30,7 @@
 
         #foregroundImageInput,
         #input {
-            color: black;
+            color: white;
             font-size: larger;
             /* width: 80%; */
             padding: 10px;
@@ -47,13 +47,23 @@
             img {
                 height: 100px;
             }
+
+            #foregroundImageInput,
+            #input {
+                color: white;
+                font-size: larger;
+                padding: 10px;
+                margin-bottom: 15px;
+                border: 1px solid #ccc;
+                border-radius: 15px;
+            }
         }
     </style>
 </head>
 
 <body>
     <center>
-        <!-- <h1> Mahaveer Janma Kalyanak Card </h1> -->
+        <br><br><br><br><br><br>
         <p> Upload Your Photo and Download Your Own Card </p>
         <input type="text" id="input" placeholder="Enter Your Name"> <br>
         <input type="file" id="foregroundImageInput" title="Upload Your Photo and Download the Card" accept="image/*">
@@ -78,33 +88,36 @@
                 const centerX = canvas.width / 2 - 50;
                 const centerY = (canvas.height / 2) - 400;
                 const imageSize = Math.min(canvas.width, canvas.height) / 2.5;
-                // const imageX = centerX - imageSize / 2;
-                // const imageY = centerY - imageSize / 2;
-                // ctx.drawImage(croppedForegroundImage, imageX, imageY, imageSize, imageSize);
                 ctx.drawImage(croppedForegroundImage, centerX, centerY, imageSize, imageSize);
             }
 
-
-            // Load the background image and call the compositeCircularImages function
             const backgroundImage = new Image();
             backgroundImage.src = "template.png";
 
-            // Function to handle the Combine and Download button click
             const combineAndDownloadButton = document.getElementById("combineAndDownloadButton");
             combineAndDownloadButton.addEventListener("click", () => {
                 showLoadingPopup();
                 const foregroundImageInput = document.getElementById("foregroundImageInput");
+
+                // Check if an image is uploaded
+                if (foregroundImageInput.files.length === 0) {
+                    alert("Please upload an image before clicking Download Button.");
+                    hideLoadingPopup(); // Hide loading popup as no image is uploaded
+                    return; // Exit function if no image is uploaded
+                }
+
                 const foregroundImage = new Image();
                 foregroundImage.onload = () => {
                     const croppedForegroundImage = cropToSquare(foregroundImage);
                     name = input.value.toUpperCase();
                     compositeSquareImages(backgroundImage, croppedForegroundImage, name);
-                    downloadImage(canvas);
+                    downloadImage(canvas, name); // Pass 'name' to downloadImage function
                 };
                 if (foregroundImageInput.files && foregroundImageInput.files[0]) {
                     foregroundImage.src = URL.createObjectURL(foregroundImageInput.files[0]);
                 }
             });
+
 
             // Function to crop the image to a square in the middle
             function cropToSquare(image) {
@@ -124,7 +137,6 @@
         });
 
         function downloadImage(canvas) {
-            // showLoadingPopup();
 
             // Create a temporary anchor element to initiate the download
             const downloadLink = document.createElement("a");
@@ -137,23 +149,6 @@
             // Hide loading popup after a short delay
             setTimeout(hideLoadingPopup, 1000); // Adjust delay time as needed
         }
-
-        // function showLoadingPopup() {
-        //     const loadingOverlay = document.createElement("div");
-        //     loadingOverlay.id = "loading-overlay";
-        //     loadingOverlay.innerText = "Creating Your Card...";
-        //     loadingOverlay.style.position = "fixed";
-        //     loadingOverlay.style.top = "0";
-        //     loadingOverlay.style.left = "0";
-        //     loadingOverlay.style.width = "100%";
-        //     loadingOverlay.style.height = "100%";
-        //     loadingOverlay.style.backgroundColor = "rgba(255, 255, 255, 0.8)";
-        //     loadingOverlay.style.display = "flex";
-        //     loadingOverlay.style.justifyContent = "center";
-        //     loadingOverlay.style.alignItems = "center";
-        //     loadingOverlay.style.zIndex = "9999";
-        //     document.body.appendChild(loadingOverlay);
-        // }
 
         function showLoadingPopup() {
             const loadingOverlay = document.createElement("div");
