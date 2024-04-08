@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>MJK Card</title>
+    <link rel="icon" type="image/x-icon" href="logo.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            background-image: url(mahaveer-bg.jpg);
+            background-repeat: no-repeat;
+            background-size: auto;
+            color: white;
+        }
+
+        #combineAndDownloadButton {
+            color: black;
+            background-color: white;
+            width: 250px;
+            height: 50px;
+            font-size: larger;
+            border-radius: 15px;
+        }
+
+        #combineAndDownloadButton:hover {
+            background-color: burlywood;
+            cursor: pointer;
+        }
+
+
+        #foregroundImageInput,
+        #input {
+            color: black;
+            font-size: larger;
+            /* width: 80%; */
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 15px;
+        }
+
+        img {
+            height: 300px;
+        }
+
+        @media only screen and (max-width: 600px) {
+            img {
+                height: 100px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <center>
+        <!-- <h1> Mahaveer Janma Kalyanak Card </h1> -->
+        <p> Upload Your Photo and Download Your Own Card </p>
+        <input type="text" id="input" placeholder="Enter Your Name"> <br>
+        <input type="file" id="foregroundImageInput" title="Upload Your Photo and Download the Card" accept="image/*">
+        <br>
+        <button id="combineAndDownloadButton">Download</button>
+        <canvas id="canvas" width="2104" height="2100" style="display:none;"></canvas>
+    </center>
+    <script>
+        var name = "";
+        document.addEventListener("DOMContentLoaded", () => {
+            const canvas = document.getElementById("canvas");
+            const input = document.getElementById("input");
+
+            // Function to composite square images onto a canvas
+            function compositeSquareImages(backgroundImage, croppedForegroundImage, text) {
+                const ctx = canvas.getContext("2d");
+
+                // Draw the background image onto the canvas
+                ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+
+                // Draw the square foreground image at the center
+                const centerX = canvas.width / 2 - 50;
+                const centerY = (canvas.height / 2) - 400;
+                const imageSize = Math.min(canvas.width, canvas.height) / 2.5;
+                // const imageX = centerX - imageSize / 2;
+                // const imageY = centerY - imageSize / 2;
+                // ctx.drawImage(croppedForegroundImage, imageX, imageY, imageSize, imageSize);
+                ctx.drawImage(croppedForegroundImage, centerX, centerY, imageSize, imageSize);
+            }
+
+
+            // Load the background image and call the compositeCircularImages function
+            const backgroundImage = new Image();
+            backgroundImage.src = "template.png";
+
+            // Function to handle the Combine and Download button click
+            const combineAndDownloadButton = document.getElementById("combineAndDownloadButton");
+            combineAndDownloadButton.addEventListener("click", () => {
+                showLoadingPopup();
+                const foregroundImageInput = document.getElementById("foregroundImageInput");
+                const foregroundImage = new Image();
+                foregroundImage.onload = () => {
+                    const croppedForegroundImage = cropToSquare(foregroundImage);
+                    name = input.value.toUpperCase();
+                    compositeSquareImages(backgroundImage, croppedForegroundImage, name);
+                    downloadImage(canvas);
+                };
+                if (foregroundImageInput.files && foregroundImageInput.files[0]) {
+                    foregroundImage.src = URL.createObjectURL(foregroundImageInput.files[0]);
+                }
+            });
+
+            // Function to crop the image to a square in the middle
+            function cropToSquare(image) {
+                const size = Math.min(image.width, image.height);
+                const offsetX = (image.width - size) / 2;
+                const offsetY = (image.height - size) / 2;
+
+                const tempCanvas = document.createElement("canvas");
+                tempCanvas.width = size;
+                tempCanvas.height = size;
+
+                const ctx = tempCanvas.getContext("2d");
+                ctx.drawImage(image, offsetX, offsetY, size, size, 0, 0, size, size);
+
+                return tempCanvas;
+            }
+        });
+
+        function downloadImage(canvas) {
+            // showLoadingPopup();
+
+            // Create a temporary anchor element to initiate the download
+            const downloadLink = document.createElement("a");
+            downloadLink.href = canvas.toDataURL("image/png");
+            downloadLink.download = name + ".png";
+
+            // Trigger the download
+            downloadLink.click();
+
+            // Hide loading popup after a short delay
+            setTimeout(hideLoadingPopup, 1000); // Adjust delay time as needed
+        }
+
+        // function showLoadingPopup() {
+        //     const loadingOverlay = document.createElement("div");
+        //     loadingOverlay.id = "loading-overlay";
+        //     loadingOverlay.innerText = "Creating Your Card...";
+        //     loadingOverlay.style.position = "fixed";
+        //     loadingOverlay.style.top = "0";
+        //     loadingOverlay.style.left = "0";
+        //     loadingOverlay.style.width = "100%";
+        //     loadingOverlay.style.height = "100%";
+        //     loadingOverlay.style.backgroundColor = "rgba(255, 255, 255, 0.8)";
+        //     loadingOverlay.style.display = "flex";
+        //     loadingOverlay.style.justifyContent = "center";
+        //     loadingOverlay.style.alignItems = "center";
+        //     loadingOverlay.style.zIndex = "9999";
+        //     document.body.appendChild(loadingOverlay);
+        // }
+
+        function showLoadingPopup() {
+            const loadingOverlay = document.createElement("div");
+            loadingOverlay.id = "loading-overlay";
+            loadingOverlay.innerHTML = `
+        <div class="loading-spinner"></div>
+        <div class="loading-text">&ensp;Creating Your Card...</div>
+    `;
+            loadingOverlay.style.position = "fixed";
+            loadingOverlay.style.top = "0";
+            loadingOverlay.style.left = "0";
+            loadingOverlay.style.width = "100%";
+            loadingOverlay.style.height = "100%";
+            loadingOverlay.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+            loadingOverlay.style.display = "flex";
+            loadingOverlay.style.justifyContent = "center";
+            loadingOverlay.style.alignItems = "center";
+            loadingOverlay.style.zIndex = "9999";
+
+            // Style for the loading spinner
+            const spinnerStyle = document.createElement("style");
+            spinnerStyle.textContent = `
+        .loading-spinner {
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-top: 5px solid #ffffff;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            color: #ffffff;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+    `;
+            document.head.appendChild(spinnerStyle);
+
+            document.body.appendChild(loadingOverlay);
+        }
+
+
+        function hideLoadingPopup() {
+            const loadingOverlay = document.getElementById("loading-overlay");
+            if (loadingOverlay) {
+                loadingOverlay.parentNode.removeChild(loadingOverlay);
+            }
+        }
+
+    </script>
+</body>
+
+</html>
