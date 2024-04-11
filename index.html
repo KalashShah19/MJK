@@ -11,7 +11,23 @@
     <meta property="og:image:type" content="image/png">
     <title>Mahaveer Janma Kalyanak Card</title>
     <style>
-        /* Loading popup styles */
+        #content {
+            min-height: calc(100% - 50px);
+            padding-bottom: 50px;
+        }
+
+        .footer {
+            background-color: white;
+            color: black;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            text-align: center;
+            line-height: 50px;
+        }
+
         #loading-popup {
             display: none;
             position: fixed;
@@ -90,6 +106,8 @@
             }
 
             #content {
+                min-height: calc(100% - 50px);
+                padding-bottom: 50px;
                 padding-top: 30%;
             }
         }
@@ -154,6 +172,11 @@
         <div class="spinner"></div>
         <div class="loading-text"> Fetching Template... </div>
     </div>
+    <footer class="footer">
+        <p>&copy; Shakimar Studio </p>
+        <p> Developed by Kalash Shah - 9426921383</p>
+    </footer>
+
     <script>
         var name = "";
         document.addEventListener("DOMContentLoaded", () => {
