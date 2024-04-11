@@ -2,21 +2,70 @@
 <html>
 
 <head>
-    <title>MJK Card</title>
-    <link rel="icon" type="image/x-icon" href="logo.ico">
+    <meta charset="UTF-8">
+    <link rel="icon" href="mahaveer-logo.jpg" type="image/jpg">
+    <link rel="icon" href="logo.ico" type="image/x-icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:description" content="Card Generator.">
+    <meta property="og:image" content="/logo.png">
+    <meta property="og:image:type" content="image/png">
+    <title>Mahaveer Janma Kalyanak Card</title>
     <style>
-        
-          
+        /* Loading popup styles */
+        #loading-popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            z-index: 9999;
+            text-align: center;
+        }
+
+        .spinner {
+            border-top: 6px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20% auto;
+        }
+
+        .loading-text {
+            font-size: 24px;
+            color: #333;
+        }
+
+        /* Spinner animation */
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
         @media only screen and (max-width: 600px) {
             img {
                 height: 100px;
             }
 
+            #combineAndDownloadButton {
+                color: black;
+                background-color: white;
+                width: 250px;
+                height: 50px;
+                font-size: larger;
+                border-radius: 15px;
+            }
+
             #foregroundImageInput,
             #input {
-                max-width: 100vw;
-                color: white;
+                width: 250px;
                 font-size: larger;
                 padding: 10px;
                 margin-bottom: 15px;
@@ -26,71 +75,85 @@
 
             body {
                 height: 100vh;
-                width: 105%;
-                background-image: url(mobile_bg.jpeg);
+                background: #200100;
                 background-repeat: no-repeat;
                 background-size: auto;
                 background-position: center;
                 overflow: hidden;
                 color: white;
             }
-            #content{
-                padding-top:60% ;
+
+            .logo {
+                max-width: 100vh;
+                width: 206px;
+                height: 145px;
+            }
+
+            #content {
+                padding-top: 30%;
             }
         }
-        @media only screen and (min-width:600px){
-        body {
-            background-image: url(mahaveer-bg.jpg);
-            background-repeat: no-repeat;
-            background-size: cover;
-            color: white;
-        }
-        #combineAndDownloadButton {
-            color: black;
-            background-color: white;
-            width: 250px;
-            height: 50px;
-            font-size: larger;
-            border-radius: 15px;
-        }
 
-        #combineAndDownloadButton:hover {
-            background-color: burlywood;
-            cursor: pointer;
+        @media only screen and (min-width:600px) {
+            body {
+                background: #200100;
+                background-repeat: no-repeat;
+                background-size: cover;
+                color: white;
+            }
+
+            #combineAndDownloadButton {
+                color: black;
+                background-color: white;
+                width: 250px;
+                height: 50px;
+                font-size: larger;
+                border-radius: 15px;
+            }
+
+            #combineAndDownloadButton:hover {
+                background-color: burlywood;
+                cursor: pointer;
+            }
+
+
+            #foregroundImageInput,
+            #input {
+                font-size: larger;
+                width: 350px;
+                padding: 10px;
+                margin-bottom: 15px;
+                border: 1px solid #ccc;
+                border-radius: 15px;
+            }
+
+            img {
+                height: 300px;
+            }
         }
-
-
-        #foregroundImageInput,
-        #input {
-            color: white;
-            font-size: larger;
-            /* width: 80%; */
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 15px;
-        }
-
-        img {
-            height: 300px;
-        }
-    }
-
     </style>
 </head>
 
 <body>
+
     <div id="content">
-    <center>
-        <br><br><br><br><br><br><br><br><br><br><br>
-        <p> Upload Your Photo and Download Your Own Card </p>
-        <input type="text" id="input" placeholder="Enter Your Name"> <br>
-        <input type="file" id="foregroundImageInput" title="Upload Your Photo and Download the Card" accept="image/*">
-        <br>
-        <button id="combineAndDownloadButton">Download</button>
-        <canvas id="canvas" width="2104" height="2100" style="display:none;"></canvas>
-    </center>
-</div>
+        <center>
+            <img src="mahaveer-logo.jpg" class="logo">
+            <p> Upload Your Photo and Download Your Own Card </p>
+            <input type="text" id="input" placeholder="Enter Your First Name"> <br>
+            <input type="file" id="foregroundImageInput" title="Upload Your Photo and Download the Card"
+                accept="image/*">
+            <br>
+            <button id="combineAndDownloadButton">Download</button>
+            <canvas id="canvas" width="2104" height="2100" style="display:none;"></canvas> <br>
+            <img id="generatedImage" alt="">
+        </center>
+    </div>
+    <!-- Loading popup -->
+    <div id="loading-popup">
+        <div class="spinner"></div>
+        <div class="loading-text"> Fetching Template... </div>
+    </div>
     <script>
         var name = "";
         document.addEventListener("DOMContentLoaded", () => {
@@ -105,25 +168,38 @@
                 ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
 
                 // Draw the square foreground image at the center
-                const centerX = canvas.width / 2 - 50;
-                const centerY = (canvas.height / 2) - 400;
-                const imageSize = Math.min(canvas.width, canvas.height) / 2.5;
+                const centerX = canvas.width / 2 + 200;
+                const centerY = (canvas.height / 2) - 340;
+                const imageSize = Math.min(canvas.width, canvas.height) / 3.2;
                 ctx.drawImage(croppedForegroundImage, centerX, centerY, imageSize, imageSize);
-            }
+                ctx.restore();
 
-            const backgroundImage = new Image();
-            backgroundImage.src = "template.png";
+                if (text.length <= 9) {
+                    ctx.font = "150px Arial";
+                    ctx.fillStyle = "white";
+                    ctx.textAlign = "right";
+                    ctx.fillText(text, (canvas.width / 2) + 850, 1650);
+                }
+                else {
+                    ctx.font = "100px Arial";
+                    ctx.fillStyle = "white";
+                    ctx.textAlign = "right";
+                    ctx.fillText(text, (canvas.width / 2) + 850, 1630);
+
+                }
+            }
 
             const combineAndDownloadButton = document.getElementById("combineAndDownloadButton");
             combineAndDownloadButton.addEventListener("click", () => {
-                showLoadingPopup();
+                showDownloadPopup();
+                const backgroundImage = new Image();
+                backgroundImage.src = "template.JPG";
                 const foregroundImageInput = document.getElementById("foregroundImageInput");
 
-                // Check if an image is uploaded
                 if (foregroundImageInput.files.length === 0) {
                     alert("Please upload an image before clicking Download Button.");
-                    hideLoadingPopup(); // Hide loading popup as no image is uploaded
-                    return; // Exit function if no image is uploaded
+                    hideDownloadPopup();
+                    return;
                 }
 
                 const foregroundImage = new Image();
@@ -131,7 +207,7 @@
                     const croppedForegroundImage = cropToSquare(foregroundImage);
                     name = input.value.toUpperCase();
                     compositeSquareImages(backgroundImage, croppedForegroundImage, name);
-                    downloadImage(canvas, name); // Pass 'name' to downloadImage function
+                    downloadImage(canvas, name);
                 };
                 if (foregroundImageInput.files && foregroundImageInput.files[0]) {
                     foregroundImage.src = URL.createObjectURL(foregroundImageInput.files[0]);
@@ -162,36 +238,38 @@
             const downloadLink = document.createElement("a");
             downloadLink.href = canvas.toDataURL("image/png");
             downloadLink.download = name + ".png";
-
-            // Trigger the download
             downloadLink.click();
 
-            // Hide loading popup after a short delay
-            setTimeout(hideLoadingPopup, 1000); // Adjust delay time as needed
+            setTimeout(hideLoadingPopup, 1000);
+            // const dataURL = canvas.toDataURL("image/png");
+
+            // // Set the src attribute of the <img> element to the data URL
+            // const generatedImage = document.getElementById("generatedImage");
+            // generatedImage.src = dataURL;
         }
 
-        function showLoadingPopup() {
-            const loadingOverlay = document.createElement("div");
-            loadingOverlay.id = "loading-overlay";
-            loadingOverlay.innerHTML = `
-        <div class="loading-spinner"></div>
-        <div class="loading-text">&ensp;Creating Your Card...</div>
+        function showDownloadPopup() {
+            const downloadOverlay = document.createElement("div");
+            downloadOverlay.id = "download-overlay";
+            downloadOverlay.innerHTML = `
+        <div class="download-spinner"></div>
+        <div class="downloading-text">&ensp;Creating Your Card...</div>
     `;
-            loadingOverlay.style.position = "fixed";
-            loadingOverlay.style.top = "0";
-            loadingOverlay.style.left = "0";
-            loadingOverlay.style.width = "100%";
-            loadingOverlay.style.height = "100%";
-            loadingOverlay.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
-            loadingOverlay.style.display = "flex";
-            loadingOverlay.style.justifyContent = "center";
-            loadingOverlay.style.alignItems = "center";
-            loadingOverlay.style.zIndex = "9999";
+            downloadOverlay.style.position = "fixed";
+            downloadOverlay.style.top = "0";
+            downloadOverlay.style.left = "0";
+            downloadOverlay.style.width = "100%";
+            downloadOverlay.style.height = "100%";
+            downloadOverlay.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
+            downloadOverlay.style.display = "flex";
+            downloadOverlay.style.justifyContent = "center";
+            downloadOverlay.style.alignItems = "center";
+            downloadOverlay.style.zIndex = "9999";
 
             // Style for the loading spinner
-            const spinnerStyle = document.createElement("style");
-            spinnerStyle.textContent = `
-        .loading-spinner {
+            const downloadspinnerStyle = document.createElement("style");
+            downloadspinnerStyle.textContent = `
+        .download-spinner {
             border: 5px solid rgba(255, 255, 255, 0.3);
             border-top: 5px solid #ffffff;
             border-radius: 50%;
@@ -205,26 +283,46 @@
             100% { transform: rotate(360deg); }
         }
         
-        .loading-text {
+        .download-text {
             color: #ffffff;
             font-size: 18px;
             margin-top: 20px;
         }
     `;
-            document.head.appendChild(spinnerStyle);
+            document.head.appendChild(downloadspinnerStyle);
 
-            document.body.appendChild(loadingOverlay);
+            document.body.appendChild(downloadOverlay);
         }
 
 
-        function hideLoadingPopup() {
-            const loadingOverlay = document.getElementById("loading-overlay");
-            if (loadingOverlay) {
-                loadingOverlay.parentNode.removeChild(loadingOverlay);
+        function hideDownloadPopup() {
+            const downloadOverlay = document.getElementById("download-overlay");
+            if (downloadOverlay) {
+                downloadOverlay.parentNode.removeChild(downloadOverlay);
             }
         }
 
+        // Show loading popup when page starts loading
+        document.addEventListener("DOMContentLoaded", function () {
+            showLoadingPopup();
+        });
+
+        // Hide loading popup when page is fully loaded
+        window.addEventListener("load", function () {
+            hideLoadingPopup();
+        });
+
+        function showLoadingPopup() {
+            document.getElementById("loading-popup").style.display = "block";
+        }
+
+        function hideLoadingPopup() {
+            document.getElementById("loading-popup").style.display = "none";
+        }
+
     </script>
+
+    <!--
 </body>
 
 </html>
