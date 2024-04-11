@@ -185,7 +185,6 @@
                     ctx.fillStyle = "white";
                     ctx.textAlign = "right";
                     ctx.fillText(text, (canvas.width / 2) + 850, 1630);
-
                 }
             }
 
@@ -208,6 +207,7 @@
                     name = input.value.toUpperCase();
                     compositeSquareImages(backgroundImage, croppedForegroundImage, name);
                     downloadImage(canvas, name);
+                    hideDownloadPopup(0);
                 };
                 if (foregroundImageInput.files && foregroundImageInput.files[0]) {
                     foregroundImage.src = URL.createObjectURL(foregroundImageInput.files[0]);
